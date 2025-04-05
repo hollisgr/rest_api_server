@@ -1,4 +1,7 @@
-all: mod get_router run_server
+LOGRUS := github.com/sirupsen/logrus
+ROUTER := github.com/julienschmidt/httprouter
+
+all: mod get run_server
 
 run_server:
 	go run cmd/main/app.go
@@ -6,8 +9,9 @@ run_server:
 mod:
 	go mod init rest_api_server
 
-get_router:
-	go get github.com/julienschmidt/httprouter
+get:
+	go get $(ROUTER)
+	go get $(LOGRUS)
 
 users:
 	curl localhost:8080/users

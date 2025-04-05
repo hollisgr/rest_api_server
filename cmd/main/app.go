@@ -2,6 +2,7 @@ package main
 
 import (
 	"api_server/internal/user"
+	"api_server/pkg/logging"
 	"log"
 	"net"
 	"net/http"
@@ -11,8 +12,9 @@ import (
 )
 
 func StartServer(router *httprouter.Router) {
+	logger := logging.GetLogger()
 
-	log.Println("Starting server")
+	logger.Infoln("Starting server")
 
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
@@ -26,16 +28,18 @@ func StartServer(router *httprouter.Router) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Println("Server is listening port 8080")
+	logger.Infoln("Server is listening port 8080")
 	server.Serve(listener)
 
 }
 
 func main() {
-	log.Println("Creating router")
+	logger := logging.GetLogger()
+
+	logger.Infoln("Creating router")
 	router := httprouter.New()
 
-	log.Println("Register user handler")
+	logger.Infoln("Register user handler")
 	handler := user.NewHandler()
 	handler.Register(router)
 
