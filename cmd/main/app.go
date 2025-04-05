@@ -26,8 +26,8 @@ func StartServer(router *httprouter.Router) {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	server.Serve(listener)
 	log.Println("Server is listening port 8080")
+	server.Serve(listener)
 
 }
 
