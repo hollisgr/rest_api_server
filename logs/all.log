@@ -1,0 +1,8 @@
+time="2025-04-06T13:55:45+09:00" level=info msg="Creating router" func="main.main()" file="app.go:39"
+time="2025-04-06T13:55:45+09:00" level=info msg="Register user handler" func="main.main()" file="app.go:42"
+time="2025-04-06T13:55:45+09:00" level=info msg="Starting server" func="main.StartServer()" file="app.go:17"
+time="2025-04-06T13:55:45+09:00" level=info msg="Server is listening port 8080" func="main.StartServer()" file="app.go:31"
+time="2025-04-06T13:55:53+09:00" level=info msg="incoming request to getlist" func="api_server/internal/user.(*handler).GetList()" file="handler.go:35"
+time="2025-04-06T13:56:01+09:00" level=info msg="incoming request to get user by uuid" func="api_server/internal/user.(*handler).GetUserByUUID()" file="handler.go:40"
+time="2025-04-06T13:56:09+09:00" level=info msg="incoming request to create user" func="api_server/internal/user.(*handler).CreateUser()" file="handler.go:45"
+time="2025-04-06T13:56:14+09:00" level=info msg="incoming request to delete user" func="api_server/internal/user.(*handler).DeleteUser()" file="handler.go:50"
