@@ -1,7 +1,7 @@
-LOGRUS := github.com/sirupsen/logrus
+LOGRUS := github.com/sirupsen/logrus github.com/sirupsen/logrus@v1.9.3
 ROUTER := github.com/julienschmidt/httprouter
 CLEANENV := github.com/ilyakaznacheev/cleanenv
-MONGODB := go.mongodb.org/mongo-driver/v2/mongo
+MONGODB := go.mongodb.org/mongo-driver/v2/mongo go.mongodb.org/mongo-driver/bson go.mongodb.org/mongo-driver/bson/primitive  go.mongodb.org/mongo-driver/mongo go.mongodb.org/mongo-driver/mongo/options
 APP := cmd/main/app.go
 
 all: mod get build

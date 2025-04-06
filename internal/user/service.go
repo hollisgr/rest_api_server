@@ -1,8 +1,8 @@
 package user
 
 import (
-	"api_server/pkg/logging"
 	"context"
+	"rest_api_server/pkg/logging"
 )
 
 type Service struct {

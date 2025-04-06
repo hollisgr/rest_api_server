@@ -6,7 +6,6 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 func NewClient(ctx context.Context, host, port, username, password, database, authDB string) (db *mongo.Database, err error) {
@@ -42,7 +41,7 @@ func NewClient(ctx context.Context, host, port, username, password, database, au
 	}
 
 	// ping
-	err = client.ping(ctx, nil)
+	err = client.Ping(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to ping mongoDB due to error: %v", err)
 	}

@@ -1,9 +1,7 @@
 package main
 
 import (
-	"api_server/internal/config"
-	"api_server/internal/user"
-	"api_server/pkg/logging"
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +9,11 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"rest_api_server/internal/config"
+	"rest_api_server/internal/user"
+	"rest_api_server/internal/user/db"
+	"rest_api_server/pkg/client/mongodb"
+	"rest_api_server/pkg/logging"
 	"time"
 
 	"github.com/julienschmidt/httprouter"
@@ -63,6 +66,39 @@ func main() {
 	router := httprouter.New()
 
 	cfg := config.GetConfig()
+
+	cfgMongo := cfg.MongoDB
+
+	mongoDBClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port,
+		cfgMongo.Username, cfgMongo.Password, cfgMongo.Database, cfgMongo.Auth_db)
+
+	if err != nil {
+		panic(err)
+	}
+
+	storage := db.NewStorage(mongoDBClient, cfgMongo.Collection, logger)
+
+	user1 := user.User{
+		ID:           "",
+		Email:        "test@test.com",
+		Username:     "testUser",
+		PasswordHash: "123123",
+	}
+
+	user1ID, user1ID_err := storage.CreateUser(context.Background(), user1)
+
+	if user1ID_err != nil {
+		panic(user1ID_err)
+	}
+
+	logger.Infoln(user1ID)
+	logger.Infoln(user1ID_err)
+
+	users, findErr := storage.FindAllUsers(context.Background())
+	if findErr != nil {
+		logger.Errorln("cant find all users")
+	}
+	fmt.Println(users)
 
 	logger.Infoln("Register user handler")
 	handler := user.NewHandler(logger)

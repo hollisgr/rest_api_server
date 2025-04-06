@@ -1,10 +1,10 @@
 package user
 
 import (
-	"api_server/internal/handlers"
-	"api_server/pkg/logging"
 	"fmt"
 	"net/http"
+	"rest_api_server/internal/handlers"
+	"rest_api_server/pkg/logging"
 
 	"github.com/julienschmidt/httprouter"
 )
