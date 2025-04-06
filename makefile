@@ -1,9 +1,10 @@
 LOGRUS := github.com/sirupsen/logrus
 ROUTER := github.com/julienschmidt/httprouter
 CLEANENV := github.com/ilyakaznacheev/cleanenv
+MONGODB := go.mongodb.org/mongo-driver/v2/mongo
 APP := cmd/main/app.go
 
-all: mod get run_server
+all: mod get build
 
 build: clean
 	go build $(APP)
@@ -18,6 +19,7 @@ get:
 	go get $(ROUTER)
 	go get $(LOGRUS)
 	go get $(CLEANENV)
+	go get $(MONGODB)
 
 clean:
 	rm -rf app
