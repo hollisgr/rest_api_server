@@ -1,10 +1,15 @@
 LOGRUS := github.com/sirupsen/logrus
 ROUTER := github.com/julienschmidt/httprouter
+CLEANENV := github.com/ilyakaznacheev/cleanenv
+APP := cmd/main/app.go
 
 all: mod get run_server
 
-run_server:
-	go run cmd/main/app.go
+build: clean
+	go build $(APP)
+
+run_server: build
+	./app
 
 mod:
 	go mod init rest_api_server
@@ -12,6 +17,11 @@ mod:
 get:
 	go get $(ROUTER)
 	go get $(LOGRUS)
+	go get $(CLEANENV)
+
+clean:
+	rm -rf app
+	rm -rf app.sock
 
 users:
 	curl localhost:8080/users
