@@ -27,6 +27,11 @@ func (d *db) CreateUser(ctx context.Context, user user.User) (string, error) {
 
 	d.logger.Debug("creating user")
 
+	count, countErr := d.collection.CountDocuments(ctx, bson.M{})
+	if countErr != nil {
+		d.logger.Infoln("userlist is empty")
+	}
+	user.UID = count + 1
 	result, err := d.collection.InsertOne(ctx, user)
 
 	if err != nil {
@@ -46,21 +51,39 @@ func (d *db) CreateUser(ctx context.Context, user user.User) (string, error) {
 	return "", fmt.Errorf("failed to convert objectid to hex, probably oid: %s", oid)
 }
 
-func (d *db) FindUser(ctx context.Context, id string) (u user.User, err error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return u, fmt.Errorf("failed to convert hex to objectid, hex: %s", id)
-	}
-	filter := bson.M{"_id": oid}
+// func (d *db) FindUser(ctx context.Context, id string) (u user.User, err error) {
+// 	oid, err := primitive.ObjectIDFromHex(id)
+// 	if err != nil {
+// 		return u, fmt.Errorf("failed to convert hex to objectid, hex: %s", id)
+// 	}
+// 	filter := bson.M{"_id": oid}
+
+// 	result := d.collection.FindOne(ctx, filter)
+// 	if result.Err() != nil {
+// 		// TODO 404
+// 		return u, fmt.Errorf("failed to find user by id: %s due to error: %v", id, err)
+// 	}
+// 	err = result.Decode(&u)
+// 	if err != nil {
+// 		return u, fmt.Errorf("failed to decode user from DB: %s due to error: %v", id, err)
+// 	}
+// 	return u, nil
+// }
+
+func (d *db) FindUser(ctx context.Context, id int64) (u user.User, err error) {
+
+	filter := bson.M{"uid": id}
+
+	d.logger.Infoln("searching for: ", id)
 
 	result := d.collection.FindOne(ctx, filter)
 	if result.Err() != nil {
 		// TODO 404
-		return u, fmt.Errorf("failed to find user by id: %s due to error: %v", id, err)
+		return u, fmt.Errorf("failed to find user by id: %d due to error: %v", id, err)
 	}
 	err = result.Decode(&u)
 	if err != nil {
-		return u, fmt.Errorf("failed to decode user from DB: %s due to error: %v", id, err)
+		return u, fmt.Errorf("failed to decode user from DB: %d due to error: %v", id, err)
 	}
 	return u, nil
 }
@@ -81,12 +104,8 @@ func (d *db) FindAllUsers(ctx context.Context) (u []user.User, err error) {
 	return u, nil
 }
 
-func (d *db) DeleteUser(ctx context.Context, id string) error {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return fmt.Errorf("failed to convert hex to objectid, hex: %s", id)
-	}
-	filter := bson.M{"_id": oid}
+func (d *db) DeleteUser(ctx context.Context, id int64) error {
+	filter := bson.M{"uid": id}
 
 	result, err := d.collection.DeleteOne(ctx, filter)
 	if err != nil {

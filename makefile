@@ -29,10 +29,10 @@ users:
 	curl localhost:8080/users
 
 user:
-	curl localhost:8080/users/123
+	curl localhost:8080/users/3
 
 create:
 	curl -X POST localhost:8080/users/123
 
 delete:
-	curl -X DELETE localhost:8080/users/123
+	curl -X DELETE localhost:8080/users/11

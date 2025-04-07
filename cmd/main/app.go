@@ -78,30 +78,8 @@ func main() {
 
 	storage := db.NewStorage(mongoDBClient, cfgMongo.Collection, logger)
 
-	user1 := user.User{
-		ID:           "",
-		Email:        "test@test.com",
-		Username:     "testUser",
-		PasswordHash: "123123",
-	}
-
-	user1ID, user1ID_err := storage.CreateUser(context.Background(), user1)
-
-	if user1ID_err != nil {
-		panic(user1ID_err)
-	}
-
-	logger.Infoln(user1ID)
-	logger.Infoln(user1ID_err)
-
-	users, findErr := storage.FindAllUsers(context.Background())
-	if findErr != nil {
-		logger.Errorln("cant find all users")
-	}
-	fmt.Println(users)
-
 	logger.Infoln("Register user handler")
-	handler := user.NewHandler(logger)
+	handler := user.NewHandler(logger, storage)
 	handler.Register(router)
 
 	StartServer(router, cfg)
