@@ -74,8 +74,6 @@ func (d *db) FindUser(ctx context.Context, id int64) (u user.User, err error) {
 
 	filter := bson.M{"uid": id}
 
-	d.logger.Infoln("searching for: ", id)
-
 	result := d.collection.FindOne(ctx, filter)
 	if result.Err() != nil {
 		// TODO 404

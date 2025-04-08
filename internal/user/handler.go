@@ -4,7 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+
 	"rest_api_server/internal/handlers"
 	"rest_api_server/pkg/logging"
 
@@ -31,7 +33,7 @@ func NewHandler(logger *logging.Logger, storage Storage) handlers.Handler {
 func (h *handler) Register(router *httprouter.Router) {
 	router.GET(usersURL, h.GetList)
 	router.GET(userURL, h.GetUserByUUID)
-	router.POST(userURL, h.CreateUser)
+	router.POST(usersURL, h.CreateUser)
 	router.DELETE(userURL, h.DeleteUser)
 }
 
@@ -54,8 +56,6 @@ func (h *handler) GetUserByUUID(w http.ResponseWriter, r *http.Request, params h
 	h.logger.Infoln("incoming request to user by id")
 	idStr := params.ByName("uuid")
 
-	h.logger.Infoln("idstr = ", idStr)
-
 	var id int64
 
 	fmt.Sscanf(idStr, "%d", &id)
@@ -74,14 +74,35 @@ func (h *handler) GetUserByUUID(w http.ResponseWriter, r *http.Request, params h
 }
 func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	h.logger.Infoln("incoming request to create user")
-	w.Write([]byte(fmt.Sprintln("THIS IS CREATE USER")))
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(400)
+		return
+	}
+	newuser := User{}
+	var oid string
+
+	err = json.Unmarshal(body, &newuser)
+	if err != nil {
+		h.logger.Infoln("cant unmarshal")
+		w.Write(body)
+		w.WriteHeader(400)
+		return
+	}
+	oid, err = h.storage.CreateUser(context.Background(), newuser)
+	if err != nil {
+		h.logger.Infoln("cant create")
+		w.Write(body)
+		w.WriteHeader(400)
+		return
+	}
+	w.Write([]byte(fmt.Sprintf("{_id: %s}", oid)))
+	w.WriteHeader(http.StatusOK)
 
 }
 func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
-	h.logger.Infoln("incoming request to user by id")
+	h.logger.Infoln("incoming request to delete user by id")
 	idStr := params.ByName("uuid")
-
-	h.logger.Infoln("idstr = ", idStr)
 
 	var id int64
 
@@ -92,5 +113,6 @@ func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params http
 		w.WriteHeader(400)
 		return
 	}
+	w.Write([]byte(fmt.Sprintf("{uid: %d}", id)))
 	w.WriteHeader(http.StatusOK)
 }
