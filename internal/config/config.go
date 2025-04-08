@@ -1,7 +1,7 @@
 package config
 
 import (
-	"api_server/pkg/logging"
+	"rest_api_server/pkg/logging"
 	"sync"
 
 	"github.com/ilyakaznacheev/cleanenv"
@@ -14,6 +14,15 @@ type Config struct {
 		BindIP string `yaml:"bind_ip" env-default:"127.0.0.1"`
 		Port   string `yaml:"port" env-default:"8080"`
 	} `yaml:"listen"`
+	MongoDB struct {
+		Host       string `json:"host"`
+		Port       string `json:"port"`
+		Database   string `json:"database"`
+		Auth_db    string `json:"auth_db"`
+		Username   string `json:"username"`
+		Password   string `json:"password"`
+		Collection string `json:"collection"`
+	} `json:"mongodb"`
 }
 
 var instance *Config
