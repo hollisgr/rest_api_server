@@ -109,6 +109,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	uid, err = h.storage.CreateUser(context.Background(), newuser)
 	if err != nil {
 		h.logger.Infoln("cant create")
@@ -117,6 +118,7 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	w.Write([]byte(fmt.Sprintf(`{"Success": true, "UID" : "%s"}`, uid)))
 	w.WriteHeader(http.StatusOK)
 

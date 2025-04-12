@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type db struct {
@@ -32,6 +33,14 @@ func (d *db) CreateUser(ctx context.Context, user user.User) (string, error) {
 		d.logger.Infoln("userlist is empty")
 	}
 	user.ID = count + 1
+
+	PasswordHash, cryptErr := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+
+	if cryptErr != nil {
+		return "", fmt.Errorf("failed to create user hash to error: %v", cryptErr)
+	}
+
+	user.PasswordHash = string(PasswordHash)
 	result, err := d.collection.InsertOne(ctx, user)
 
 	if err != nil {
@@ -57,7 +66,6 @@ func (d *db) FindUser(ctx context.Context, id int64) (u user.User, err error) {
 
 	result := d.collection.FindOne(ctx, filter)
 	if result.Err() != nil {
-		// TODO 404
 		return u, fmt.Errorf("failed to find user by id: %d due to error: %v", id, err)
 	}
 	err = result.Decode(&u)
