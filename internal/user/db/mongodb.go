@@ -31,7 +31,7 @@ func (d *db) CreateUser(ctx context.Context, user user.User) (string, error) {
 	if countErr != nil {
 		d.logger.Infoln("userlist is empty")
 	}
-	user.UID = count + 1
+	user.ID = count + 1
 	result, err := d.collection.InsertOne(ctx, user)
 
 	if err != nil {
@@ -51,28 +51,9 @@ func (d *db) CreateUser(ctx context.Context, user user.User) (string, error) {
 	return "", fmt.Errorf("failed to convert objectid to hex, probably oid: %s", oid)
 }
 
-// func (d *db) FindUser(ctx context.Context, id string) (u user.User, err error) {
-// 	oid, err := primitive.ObjectIDFromHex(id)
-// 	if err != nil {
-// 		return u, fmt.Errorf("failed to convert hex to objectid, hex: %s", id)
-// 	}
-// 	filter := bson.M{"_id": oid}
-
-// 	result := d.collection.FindOne(ctx, filter)
-// 	if result.Err() != nil {
-// 		// TODO 404
-// 		return u, fmt.Errorf("failed to find user by id: %s due to error: %v", id, err)
-// 	}
-// 	err = result.Decode(&u)
-// 	if err != nil {
-// 		return u, fmt.Errorf("failed to decode user from DB: %s due to error: %v", id, err)
-// 	}
-// 	return u, nil
-// }
-
 func (d *db) FindUser(ctx context.Context, id int64) (u user.User, err error) {
 
-	filter := bson.M{"uid": id}
+	filter := bson.M{"id": id}
 
 	result := d.collection.FindOne(ctx, filter)
 	if result.Err() != nil {
@@ -89,8 +70,13 @@ func (d *db) FindUser(ctx context.Context, id int64) (u user.User, err error) {
 func (d *db) FindAllUsers(ctx context.Context) (u []user.User, err error) {
 
 	cursor, err := d.collection.Find(ctx, bson.M{})
+
+	count, c_err := d.collection.CountDocuments(ctx, bson.M{})
+	if count < 1 {
+		return u, fmt.Errorf("userslist is empty: %v", c_err)
+	}
+
 	if cursor.Err() != nil {
-		// TODO 404
 		return u, fmt.Errorf("failed to find users due to error: %v", err)
 	}
 
@@ -98,19 +84,17 @@ func (d *db) FindAllUsers(ctx context.Context) (u []user.User, err error) {
 	if err != nil {
 		return u, fmt.Errorf("failed to read all docs from cursor, error %v", err)
 	}
-
 	return u, nil
 }
 
 func (d *db) DeleteUser(ctx context.Context, id int64) error {
-	filter := bson.M{"uid": id}
+	filter := bson.M{"id": id}
 
 	result, err := d.collection.DeleteOne(ctx, filter)
 	if err != nil {
 		return fmt.Errorf("failed to execute query, error: %v", err)
 	}
 	if result.DeletedCount == 0 {
-		// TODO ErrEntityNotFound
 		return fmt.Errorf("not found")
 	}
 	d.logger.Tracef("deleted %d documents", result.DeletedCount)

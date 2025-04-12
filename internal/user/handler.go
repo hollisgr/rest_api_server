@@ -15,12 +15,13 @@ import (
 
 const (
 	usersURL = "/users"
-	userURL  = "/users/:uuid"
+	userURL  = "/users/:id"
 )
 
 type handler struct {
 	logger  *logging.Logger
 	storage Storage
+	err     h_error
 }
 
 func NewHandler(logger *logging.Logger, storage Storage) handlers.Handler {
@@ -32,7 +33,7 @@ func NewHandler(logger *logging.Logger, storage Storage) handlers.Handler {
 
 func (h *handler) Register(router *httprouter.Router) {
 	router.GET(usersURL, h.GetList)
-	router.GET(userURL, h.GetUserByUUID)
+	router.GET(userURL, h.GetUserByID)
 	router.POST(usersURL, h.CreateUser)
 	router.DELETE(userURL, h.DeleteUser)
 }
@@ -41,33 +42,50 @@ func (h *handler) GetList(w http.ResponseWriter, r *http.Request, params httprou
 	h.logger.Infoln("incoming request to getlist")
 	users, err := h.storage.FindAllUsers(context.Background())
 	if err != nil {
-		w.WriteHeader(400)
+		error := h.err.CreateErrorJson(404, "Not found", "Userlist is empty")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(error)
+		return
 	}
 	result, mErr := json.Marshal(users)
 	if mErr != nil {
 		h.logger.Infoln("Marshall error")
+		return
 	}
-
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)
 }
 
-func (h *handler) GetUserByUUID(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	h.logger.Infoln("incoming request to user by id")
-	idStr := params.ByName("uuid")
+	idStr := params.ByName("id")
 
 	var id int64
 
-	fmt.Sscanf(idStr, "%d", &id)
+	n, _ := fmt.Sscanf(idStr, "%d", &id)
+	if n < 1 {
+		h.logger.Infoln("Uncorrect id")
+		error := h.err.CreateErrorJson(400, "Bad Request", "Uncorrect id")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(error)
+		return
+	}
 
 	user, err := h.storage.FindUser(context.Background(), id)
 	if err != nil {
-		w.WriteHeader(400)
+		h.logger.Infoln("User not found")
+		error := h.err.CreateErrorJson(404, "Not found", "User not found")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(error)
 		return
 	}
 	result, mErr := json.Marshal(user)
 	if mErr != nil {
 		h.logger.Infoln("Marshall error")
+		error := h.err.CreateErrorJson(400, "Bad Request", "Marshal err")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(error)
+		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Write(result)
@@ -76,43 +94,56 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 	h.logger.Infoln("incoming request to create user")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
+
 	newuser := User{}
-	var oid string
+	var uid string
 
 	err = json.Unmarshal(body, &newuser)
 	if err != nil {
 		h.logger.Infoln("cant unmarshal")
-		w.Write(body)
-		w.WriteHeader(400)
+		error := h.err.CreateErrorJson(400, "Bad Request", "Unmarshal err")
+		w.Write(error)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	oid, err = h.storage.CreateUser(context.Background(), newuser)
+	uid, err = h.storage.CreateUser(context.Background(), newuser)
 	if err != nil {
 		h.logger.Infoln("cant create")
-		w.Write(body)
-		w.WriteHeader(400)
+		error := h.err.CreateErrorJson(400, "Bad Request", "Create err")
+		w.Write(error)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("{_id: %s}", oid)))
+	w.Write([]byte(fmt.Sprintf(`{"Success": true, "UID" : "%s"}`, uid)))
 	w.WriteHeader(http.StatusOK)
 
 }
 func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	h.logger.Infoln("incoming request to delete user by id")
-	idStr := params.ByName("uuid")
+	idStr := params.ByName("id")
 
 	var id int64
 
-	fmt.Sscanf(idStr, "%d", &id)
+	n, _ := fmt.Sscanf(idStr, "%d", &id)
+	if n < 1 {
+		h.logger.Infoln("Uncorrect id")
+		error := h.err.CreateErrorJson(400, "Bad Request", "Uncorrect id")
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write(error)
+		return
+	}
 
 	err := h.storage.DeleteUser(context.Background(), id)
 	if err != nil {
-		w.WriteHeader(400)
+		h.logger.Infoln("Marshall error")
+		error := h.err.CreateErrorJson(404, "Not found", "User not found")
+		w.WriteHeader(http.StatusNotFound)
+		w.Write(error)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("{uid: %d}", id)))
+	w.Write([]byte(fmt.Sprintf(`{"Success": true, "ID" : "%d"}`, id)))
 	w.WriteHeader(http.StatusOK)
 }
