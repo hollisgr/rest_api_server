@@ -21,18 +21,11 @@ get:
 	go get $(CLEANENV)
 	go get $(MONGODB)
 
+push: 
+	git add .
+	git commit -m "$(commit)"
+	git push origin main
+
 clean:
 	rm -rf app
 	rm -rf app.sock
-
-users:
-	curl localhost:8080/users
-
-user:
-	curl localhost:8080/users/3
-
-create:
-	curl -X POST localhost:8080/users/123
-
-delete:
-	curl -X DELETE localhost:8080/users/11
