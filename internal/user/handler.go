@@ -21,7 +21,7 @@ const (
 type handler struct {
 	logger  *logging.Logger
 	storage Storage
-	err     h_error
+	respMsg RestMsg
 }
 
 func NewHandler(logger *logging.Logger, storage Storage) handlers.Handler {
@@ -42,9 +42,9 @@ func (h *handler) GetList(w http.ResponseWriter, r *http.Request, params httprou
 	h.logger.Infoln("incoming request to getlist")
 	users, err := h.storage.FindAllUsers(context.Background())
 	if err != nil {
-		error := h.err.CreateErrorJson(404, "Not found", "Userlist is empty")
+		msg := h.respMsg.CreateMsgJson(404, "Not found", "Userlist is empty")
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
 	result, mErr := json.Marshal(users)
@@ -65,26 +65,26 @@ func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, params htt
 	n, _ := fmt.Sscanf(idStr, "%d", &id)
 	if n < 1 {
 		h.logger.Infoln("Uncorrect id")
-		error := h.err.CreateErrorJson(400, "Bad Request", "Uncorrect id")
+		msg := h.respMsg.CreateMsgJson(400, "Bad Request", "Uncorrect id")
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
 
 	user, err := h.storage.FindUser(context.Background(), id)
 	if err != nil {
 		h.logger.Infoln("User not found")
-		error := h.err.CreateErrorJson(404, "Not found", "User not found")
+		msg := h.respMsg.CreateMsgJson(404, "Not found", "User not found")
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
 	result, mErr := json.Marshal(user)
 	if mErr != nil {
 		h.logger.Infoln("Marshall error")
-		error := h.err.CreateErrorJson(400, "Bad Request", "Marshal err")
+		msg := h.respMsg.CreateMsgJson(400, "Bad Request", "Marshal err")
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
@@ -104,8 +104,8 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 	err = json.Unmarshal(body, &newuser)
 	if err != nil {
 		h.logger.Infoln("cant unmarshal")
-		error := h.err.CreateErrorJson(400, "Bad Request", "Unmarshal err")
-		w.Write(error)
+		msg := h.respMsg.CreateMsgJson(400, "Bad Request", "Unmarshal err")
+		w.Write(msg)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -113,15 +113,14 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 	uid, err = h.storage.CreateUser(context.Background(), newuser)
 	if err != nil {
 		h.logger.Infoln("cant create")
-		error := h.err.CreateErrorJson(400, "Bad Request", "Create err")
-		w.Write(error)
+		msg := h.respMsg.CreateMsgJson(400, "Bad Request", "Create err")
+		w.Write(msg)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-
-	w.Write([]byte(fmt.Sprintf(`{"Success": true, "UID" : "%s"}`, uid)))
+	msg := h.respMsg.CreateMsgJson(201, "Created", fmt.Sprintf("Successful created user uid: %s", uid))
 	w.WriteHeader(http.StatusOK)
-
+	w.Write(msg)
 }
 func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	h.logger.Infoln("incoming request to delete user by id")
@@ -132,20 +131,21 @@ func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params http
 	n, _ := fmt.Sscanf(idStr, "%d", &id)
 	if n < 1 {
 		h.logger.Infoln("Uncorrect id")
-		error := h.err.CreateErrorJson(400, "Bad Request", "Uncorrect id")
+		msg := h.respMsg.CreateMsgJson(400, "Bad Request", "Uncorrect id")
 		w.WriteHeader(http.StatusBadRequest)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
 
 	err := h.storage.DeleteUser(context.Background(), id)
 	if err != nil {
 		h.logger.Infoln("Marshall error")
-		error := h.err.CreateErrorJson(404, "Not found", "User not found")
+		msg := h.respMsg.CreateMsgJson(404, "Not found", "User not found")
 		w.WriteHeader(http.StatusNotFound)
-		w.Write(error)
+		w.Write(msg)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf(`{"Success": true, "ID" : "%d"}`, id)))
+	msg := h.respMsg.CreateMsgJson(200, "OK", fmt.Sprintf("Successful deleted id: %d", id))
 	w.WriteHeader(http.StatusOK)
+	w.Write(msg)
 }
