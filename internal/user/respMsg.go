@@ -1,6 +1,9 @@
 package user
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"net/http"
+)
 
 type RestMsg struct {
 	Status  int    `json:"status"`
@@ -16,8 +19,10 @@ func (r *RestMsg) NewError(status int, code string, msg string) *RestMsg {
 	}
 }
 
-func (r *RestMsg) CreateMsgJson(status int, code string, msg string) []byte {
+func (r *RestMsg) SendMsgJson(w http.ResponseWriter, status int, code string, msg string) []byte {
 	err := r.NewError(status, code, msg)
 	result, _ := json.Marshal(err)
+	w.Write(result)
+	w.WriteHeader(status)
 	return result
 }
