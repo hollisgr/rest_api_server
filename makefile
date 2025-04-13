@@ -22,9 +22,10 @@ get:
 	go get $(MONGODB)
 
 push: 
-	git add .
-	git commit -m "$(commit)"
-	git push origin main
+	@read -p "inter commit string: " commit; \
+	git add .; \
+	git commit -m "$$commit"; \ 
+	git push origin main;
 
 clean:
 	rm -rf app
