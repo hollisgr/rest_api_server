@@ -39,20 +39,16 @@ func pwdValidation(w http.ResponseWriter, h *handler, pwd string) error {
 		h.logger.Infoln("pwd is short")
 		h.respMsg.SendMsgJson(w, http.StatusBadRequest, "Bad Request", "Password is too short")
 		err = fmt.Errorf("pwd is short")
-		break
 	case LONGPWD:
 		h.logger.Infoln("pwd is long")
 		h.respMsg.SendMsgJson(w, http.StatusBadRequest, "Bad Request", "Password is too long")
 		err = fmt.Errorf("pwd is long")
-		break
 	case FORBIDDENCHARS:
 		h.logger.Infoln("pwd contains forbidden chars")
 		h.respMsg.SendMsgJson(w, http.StatusBadRequest, "Bad Request", "Password contains forbidden chars")
 		err = fmt.Errorf("pwd contains forbiddent chars")
-		break
 	default:
 		err = nil
-		break
 	}
 	return err
 }
