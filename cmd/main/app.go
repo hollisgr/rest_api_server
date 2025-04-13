@@ -12,7 +12,7 @@ import (
 	"rest_api_server/internal/config"
 	"rest_api_server/internal/user"
 	"rest_api_server/internal/user/db"
-	"rest_api_server/pkg/client/mongodb"
+	"rest_api_server/pkg/client/postgresql"
 	"rest_api_server/pkg/logging"
 	"time"
 
@@ -67,19 +67,17 @@ func main() {
 
 	cfg := config.GetConfig()
 
-	cfgMongo := cfg.MongoDB
+	logger.Infoln("Connecting postgresql")
 
-	mongoDBClient, err := mongodb.NewClient(context.Background(), cfgMongo.Host, cfgMongo.Port,
-		cfgMongo.Username, cfgMongo.Password, cfgMongo.Database, cfgMongo.Auth_db)
-
+	postgreSQLClient, err := postgresql.NewClient(context.Background(), 3, *cfg)
 	if err != nil {
-		panic(err)
+		logger.Fatalf("%v", err)
 	}
 
-	storage := db.NewStorage(mongoDBClient, cfgMongo.Collection, logger)
+	rep := db.NewRepository(postgreSQLClient, logger)
 
 	logger.Infoln("Register user handler")
-	handler := user.NewHandler(logger, storage)
+	handler := user.NewHandler(logger, rep)
 	handler.Register(router)
 
 	StartServer(router, cfg)

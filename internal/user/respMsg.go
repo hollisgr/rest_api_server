@@ -11,7 +11,7 @@ type RestMsg struct {
 	Message string `json:"message"`
 }
 
-func (r *RestMsg) NewError(status int, code string, msg string) *RestMsg {
+func (r *RestMsg) NewMsg(status int, code string, msg string) *RestMsg {
 	return &RestMsg{
 		Status:  status,
 		Code:    code,
@@ -20,9 +20,9 @@ func (r *RestMsg) NewError(status int, code string, msg string) *RestMsg {
 }
 
 func (r *RestMsg) SendMsgJson(w http.ResponseWriter, status int, code string, msg string) []byte {
-	err := r.NewError(status, code, msg)
-	result, _ := json.Marshal(err)
-	w.Write(result)
+	NewMsg := r.NewMsg(status, code, msg)
+	result, _ := json.Marshal(NewMsg)
 	w.WriteHeader(status)
+	w.Write(result)
 	return result
 }
