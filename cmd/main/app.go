@@ -76,6 +76,8 @@ func main() {
 
 	rep := db.NewRepository(postgreSQLClient, logger)
 
+	logger.Infof("Postgresql is connected on %s:%s", cfg.Postgresql.Host, cfg.Postgresql.Port)
+
 	logger.Infoln("Register user handler")
 	handler := user.NewHandler(logger, rep)
 	handler.Register(router)
