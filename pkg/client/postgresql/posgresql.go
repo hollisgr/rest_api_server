@@ -8,13 +8,11 @@ import (
 	"rest_api_server/pkg/utils"
 	"time"
 
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx/v4"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Client interface {
-	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
 	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
 	Begin(ctx context.Context) (pgx.Tx, error)
@@ -26,7 +24,7 @@ func NewClient(ctx context.Context, maxAttempts int, cfg config.Config) (pool *p
 		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 
-		pool, err = pgxpool.Connect(ctx, dsn)
+		pool, err = pgxpool.New(ctx, dsn)
 		if err != nil {
 			return err
 		}

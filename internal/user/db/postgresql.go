@@ -58,9 +58,9 @@ func (r *repository) FindAllUsers(ctx context.Context) ([]user.User, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	for rows.Next() {
 		tempUser := user.User{}
-
 		err = rows.Scan(&tempUser.ID, &tempUser.Username, &tempUser.Email)
 		if err != nil {
 			return nil, err
@@ -96,6 +96,7 @@ func (r *repository) CreateUser(ctx context.Context, user user.User) error {
 		FROM users
 		`
 	count := 0
+	id := 0
 	r.client.QueryRow(ctx, countQuery).Scan(&count)
 	user.ID = int64(count) + 1
 
@@ -108,11 +109,14 @@ func (r *repository) CreateUser(ctx context.Context, user user.User) error {
 	user.PasswordHash = string(PasswordHash)
 
 	query := `
-			INSERT INTO users (id, username, email, passwordhash)
+			INSERT INTO users (id, username, email, passwordhash) RETURNING id
 			VALUES ($1, $2, $3, $4)
 			`
 	r.logger.Traceln("SQL Query:", formatQuery(query))
-	r.client.QueryRow(ctx, query, user.ID, user.Username, user.Email, user.PasswordHash)
+	r.client.QueryRow(ctx, query, user.ID, user.Username, user.Email, user.PasswordHash, &id)
+	if id == 0 {
+		return fmt.Errorf("failed to create user, args not unique")
+	}
 
 	return nil
 }

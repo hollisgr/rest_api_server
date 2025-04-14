@@ -40,8 +40,8 @@ func (h *handler) Register(router *httprouter.Router) {
 
 func (h *handler) GetList(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
 	h.logger.Infoln("incoming request to getlist")
-	users, err := h.storage.FindAllUsers(context.Background())
-	if err != nil {
+	users, _ := h.storage.FindAllUsers(context.Background())
+	if len(users) < 1 {
 		h.respMsg.SendMsgJson(w, http.StatusNotFound, "Not found", "Userlist is empty")
 		return
 	}
@@ -83,6 +83,7 @@ func (h *handler) GetUserByID(w http.ResponseWriter, r *http.Request, params htt
 	w.Write(result)
 }
 func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+
 	h.logger.Infoln("incoming request to create user")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -105,11 +106,13 @@ func (h *handler) CreateUser(w http.ResponseWriter, r *http.Request, params http
 	}
 
 	err = h.storage.CreateUser(context.Background(), newuser)
+
 	if err != nil {
-		h.logger.Infoln("cant create")
+		h.logger.Error(err)
 		h.respMsg.SendMsgJson(w, http.StatusBadRequest, "Bad Request", "Create err")
 		return
 	}
+
 	h.respMsg.SendMsgJson(w, http.StatusCreated, "Created", "Successful created user")
 }
 func (h *handler) DeleteUser(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
