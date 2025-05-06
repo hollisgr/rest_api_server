@@ -1,5 +1,5 @@
 ---
-
+admin_pwd: 
 is_debug: true
 listen:
   type: tcp

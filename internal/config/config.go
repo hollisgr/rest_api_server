@@ -8,8 +8,9 @@ import (
 )
 
 type Config struct {
-	IsDebug *bool `yaml:"is_debug" env-default:"true"`
-	Listen  struct {
+	AdminPassword string `yaml:"admin_pwd"`
+	IsDebug       *bool  `yaml:"is_debug" env-default:"true"`
+	Listen        struct {
 		Type   string `yaml:"type" env-default:"port"`
 		BindIP string `yaml:"bind_ip" env-default:"127.0.0.1"`
 		Port   string `yaml:"port" env-default:"8080"`
