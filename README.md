@@ -1,7 +1,7 @@
 # REST API SERVER
 
 ### Server implement basic CRUD operations on USER entity:
-```
+```golang
 type User struct { 
 	Id           string `json:"id"` 
 	Login        string `json:"login"` 
@@ -33,7 +33,7 @@ JWT_TOKEN_EXP_TIME={token expiration time in hours}.
 
 - Install **GOOSE**: `go install github.com/pressly/goose/v3/cmd/goose@latest`;
 
-- Set values in **makefile**: \
+- Set values in **makefile**:
 ```
     GOOSE_DBHOST := {postgresql host}
     GOOSE_DBPORT := {postgresql port}
@@ -46,8 +46,8 @@ JWT_TOKEN_EXP_TIME={token expiration time in hours}.
 
 ## Build and run server:
 - After configure you can use makefile for **quick build and run server** by using command `make all`
-- For build-only use command `make build`
-- You can build it without makefile using command: 
+- For **build-only** use command `make build`
+- You can **build it without makefile** using command: 
 - - `go build -o rest_api cmd/rest_api/rest_api.go` 
 - - and run it `./rest_api`
 - Or you can use `go run cmd/rest_api/rest_api.go`
