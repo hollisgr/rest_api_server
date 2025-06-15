@@ -2,7 +2,7 @@
 
 Server implement basic CRUD operations on USER entity:
 
-type User struct { \
+type **User** struct { \
 	Id           string `json:"id"` \
 	Login        string `json:"login"` \
 	FirstName    string `json:"first_name"` \
@@ -12,8 +12,8 @@ type User struct { \
 }
 
 Based on:
-- Golang (gin);
-- Postgresql.
+- **Golang (gin)**;
+- **Postgresql**.
 
 ## Configure server:
 ### Configure **.env** file in root:
