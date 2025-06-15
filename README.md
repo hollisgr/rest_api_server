@@ -7,15 +7,15 @@ Based on:
 ## Configure server:
 Configure ".env" file in root:
 
-BIND_IP=`{host}` \
-LISTEN_PORT=`{port}` \
+BIND_IP=`{server host}` \
+LISTEN_PORT=`{server port}` \
 PSQL_HOST=`{postgresql host}` \
 PSQL_PORT=`{postgresql port}`  \
 PSQL_DBNAME=`{postgresql db name}`  \
 PSQL_USER=`{postgresql username}`  \
 PSQL_PASSWORD=`{postgresql password}` \
 JWT_SECRET_KEY=`{your secret key}` \
-JWT_TOKEN_EXP_TIME=`{token expression time in hours}`
+JWT_TOKEN_EXP_TIME=`{token expiration time in hours}`
 
 ## Configure GOOSE migrations
 
