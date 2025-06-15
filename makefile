@@ -9,13 +9,12 @@ REST_API_BIN := build/rest_api
 REST_API_SRC := cmd/rest_api/rest_api.go
 
 GOOSE_DRIVER := postgres
-GOOSE_DBHOST := 
-GOOSE_DBPORT := 
-GOOSE_DBNAME := 
-GOOSE_DBUSER := 
-GOOSE_DBPASSWORD := 
+GOOSE_DBHOST := 0.0.0.0
+GOOSE_DBPORT := 25432
+GOOSE_DBNAME := postgres
+GOOSE_DBUSER := postgres
+GOOSE_DBPASSWORD := qwe123qwe123
 GOOSE_DBSTRING := postgresql://$(GOOSE_DBNAME):$(GOOSE_DBPASSWORD)@$(GOOSE_DBHOST):$(GOOSE_DBPORT)/$(GOOSE_DBNAME)?sslmode=disable
-
 
 all: build run 
 
@@ -26,7 +25,6 @@ run:
 	./$(REST_API_BIN)
 
 goose_install:
-	export PATH=$(PATH):home/$(USER)/go/bin/
 	go install $(GOOSE)
 
 migrations_up:

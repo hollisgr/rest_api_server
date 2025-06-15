@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
 	"rest_api/internal/db/postgres"
 	"rest_api/internal/db/storage"
 	"rest_api/internal/service/dto"
@@ -41,7 +40,6 @@ func (r *repository) CreateUser(ctx context.Context, u dto.DBUserCreateDTO) (int
 			id
 	`
 	// log.Println("SQL Query:", formatQuery(query))
-	log.Println(u)
 
 	r.client.QueryRow(ctx, query, u.Login, u.FirstName, u.SecondName, u.Email, u.PasswordHash).Scan(&id)
 

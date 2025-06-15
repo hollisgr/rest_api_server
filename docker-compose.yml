@@ -1,0 +1,39 @@
+---
+
+services:
+  rest_api_server:
+    container_name: rest-api
+    environment:
+      BIND_IP: "0.0.0.0"
+      LISTEN_PORT: "8080"
+      PSQL_HOST: "psql-db"
+      PSQL_PORT: "5432"
+      PSQL_NAME: ${PSQL_DBNAME}
+      PSQL_USER: ${PSQL_USER}
+      PSQL_PASSWORD: ${PSQL_PASSWORD}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+    build:
+      context: ./
+      dockerfile: ./build/dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports: 
+      - "8181:8080"
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: psql-db
+    environment:
+      POSTGRES_DB: ${PSQL_DBNAME}
+      POSTGRES_USER: ${PSQL_USER}
+      POSTGRES_PASSWORD: ${PSQL_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "25432:5432"
