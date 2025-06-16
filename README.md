@@ -62,15 +62,238 @@ JWT_TOKEN_EXP_TIME={token expiration time in hours}.
 - `make docker-compose-down` to stop containers and removes containers, networks, volumes, and images created by up.
 
 ## Routes:
-### Without token:
+### POST("/users") - create new user
 ```
-- POST("/users") - create new user
-- POST("/auth") - authorization by login and password
+REQUEST:
+	method: POST
+	headers: 
+		Content-Type: "application/json"
+	body: 
+		{
+			"login":"{your_login}",
+			"password":"{your_password}",
+			"first_name":"{your_first_name}",
+			"second_name":"{your_second_name}",
+			"email":"{your@email.com}"
+		}
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"message": "created user with id: {your_id}",
+			"status": "OK",
+			"success": true 
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Bad Request",
+			"success": false
+		}
 ```
-### Protected:
+### POST("/auth") - authorization by login and password
 ```
-- GET("/users/:id") - get user by id
-- GET("/users") - get list of all users
-- PATCH("/users/:id") - update user by id
-- DELETE("/users/:id") - delete user by id
+REQUEST:
+	method: POST
+	headers: 
+		Content-Type: "application/json"
+	body: {
+		"login":"{your_login}",
+		"password":"{your_password}",
+	}
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"message": "Bearer {your_token}",
+			"status": "OK",
+			"success": true
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Bad Request",
+			"success": false
+		}
+	
+	status: 401
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Unauthorized",
+			"success": false
+		}
+```
+### GET("/users/:id") - get user by id
+```
+REQUEST:
+	method: GET
+	headers: 
+		Authorization: "Bearer {token}"
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"success": "true",
+			"user": {
+				"id": {your_id},
+				"login": "{your_login}",
+				"first_name": "{your_first_name}",
+				"second_name": "{your_second_name}",
+				"email": "{your@email.com}"
+			}
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "user not found",
+			"status": "Bad Request",
+			"success": false
+		}
+
+	status: 401
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Unauthorized",
+			"success": false
+		}
+```
+
+### GET("/users") - get list of all users
+```
+REQUEST:
+	method: GET
+	headers: 
+		Authorization: "Bearer {token}"
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"success": "true",
+			"users list": 
+			[
+				{
+					"id": {your_id},
+					"login": "{your_login}",
+					"first_name": "{your_first_name}",
+					"second_name": "{your_second_name}",
+					"email": "{your@email.com}"
+				},
+				{
+					"id": {your_id},
+					"login": "{your_login}",
+					"first_name": "{your_first_name}",
+					"second_name": "{your_second_name}",
+					"email": "{your@email.com}"
+				},
+				{
+					"id": {your_id},
+					"login": "{your_login}",
+					"first_name": "{your_first_name}",
+					"second_name": "{your_second_name}",
+					"email": "{your@email.com}"
+				}
+			]
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "users list is empty",
+			"status": "Bad Request",
+			"success": false
+		}
+
+	status: 401
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Unauthorized",
+			"success": false
+		}
+```
+
+### PATCH("/users/:id") - update user by id
+
+```
+REQUEST:
+	method: PATCH
+	headers: 
+		Authorization: "Bearer {token}"
+		Content-Type: "application/json"
+	body: 
+		{
+			"login":"{your_new_login}",
+			"first_name":"{your_new_first_name}",
+			"second_name":"{your_new_second_name}",
+			"email":"{your_new@email.com}"
+		}
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"success": "true",
+			"user": {
+				"id": {your_id},
+				"login": "{your_login}",
+				"first_name": "{your_first_name}",
+				"second_name": "{your_second_name}",
+				"email": "{your@email.com}"
+			}
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "user not found",
+			"status": "Bad Request",
+			"success": false
+		}
+
+	status: 401
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Unauthorized",
+			"success": false
+		}
+```
+
+### DELETE("/users/:id") - delete user by id
+
+```
+REQUEST:
+	method: DELETE
+	headers: 
+		Authorization: "Bearer {token}"
+RESPONSE:
+	status: 200
+	body: 
+		{
+			"message": "deleted user_id: {id}",
+			"status": "OK",
+			"success": true
+		}
+
+	status: 400
+	body: 
+		{
+			"message": "user not found",
+			"status": "Bad Request",
+			"success": false
+		}
+
+	status: 401
+	body: 
+		{
+			"message": "{error text}",
+			"status": "Unauthorized",
+			"success": false
+		}
 ```

@@ -5,7 +5,7 @@ VALIDATOR := github.com/go-playground/validator/v10
 GIN := github.com/gin-gonic/gin
 GOOSE := github.com/pressly/goose/v3/cmd/goose@latest
 
-REST_API_BIN := build/rest_api
+REST_API_BIN := rest_api
 REST_API_SRC := cmd/rest_api/rest_api.go
 
 GOOSE_DRIVER := postgres

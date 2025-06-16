@@ -6,11 +6,9 @@ import (
 	"rest_api/internal/handler/middleware"
 	"rest_api/internal/handler/repository"
 	"rest_api/internal/service/dto"
-	"rest_api/internal/service/jwt"
 	"rest_api/internal/service/user_repository"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Handler struct {
@@ -39,7 +37,7 @@ func (h *Handler) Register(r *gin.Engine) {
 }
 
 func (h *Handler) Authentification(c *gin.Context) {
-	userData := dto.UserAuthDTO{}
+	userData := dto.WebUserAuth{}
 
 	err := c.BindJSON(&userData)
 	if err != nil {
@@ -47,27 +45,18 @@ func (h *Handler) Authentification(c *gin.Context) {
 		return
 	}
 
-	user, err := h.UserRepository.LoadUserByLogin(userData.Login)
+	token, err := h.UserRepository.AuthUser(userData)
 
 	if err != nil {
-		SendError(c, http.StatusUnauthorized, fmt.Errorf("load user err"))
+		SendError(c, http.StatusUnauthorized, err)
 		return
 	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(userData.Password))
-
-	if err != nil {
-		SendError(c, http.StatusUnauthorized, fmt.Errorf("compare err"))
-		return
-	}
-
-	token := jwt.CreateToken(user)
 
 	SendSuccess(c, http.StatusOK, fmt.Sprintf("Bearer %s", token))
 }
 
 func (h *Handler) CreateNewUser(c *gin.Context) {
-	userData := dto.UserCreateDTO{}
+	userData := dto.WebUserCreate{}
 
 	err := c.BindJSON(&userData)
 	if err != nil {
@@ -88,7 +77,8 @@ func (h *Handler) CreateNewUser(c *gin.Context) {
 func (h *Handler) UserList(c *gin.Context) {
 	userList, err := h.UserRepository.LoadUserList()
 	if err != nil {
-		SendError(c, http.StatusNotFound, fmt.Errorf("userlist is empty"))
+		// SendError(c, http.StatusNotFound, fmt.Errorf("userlist is empty"))
+		SendError(c, http.StatusNotFound, err)
 		return
 	}
 
@@ -127,7 +117,7 @@ func (h *Handler) UpdateUserByID(c *gin.Context) {
 		return
 	}
 
-	u := dto.UserUpdateDTO{}
+	u := dto.WebUserUpdate{}
 	err = c.BindJSON(&u)
 	if err != nil {
 		SendError(c, http.StatusBadRequest, err)

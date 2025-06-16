@@ -22,7 +22,7 @@ func NewStorage(client postgres.Client) storage.Storage {
 	}
 }
 
-func (r *repository) CreateUser(ctx context.Context, u dto.DBUserCreateDTO) (int, error) {
+func (r *repository) CreateUser(ctx context.Context, u dto.DBUserCreate) (int, error) {
 	id := 0
 
 	query := `
@@ -49,7 +49,7 @@ func (r *repository) CreateUser(ctx context.Context, u dto.DBUserCreateDTO) (int
 	return id, nil
 }
 
-func (r *repository) LoadUserByID(ctx context.Context, id int) (dto.UserLoadDTO, error) {
+func (r *repository) LoadUserByID(ctx context.Context, id int) (dto.DBUserLoad, error) {
 	query := `
 		SELECT 
 			id,
@@ -68,7 +68,7 @@ func (r *repository) LoadUserByID(ctx context.Context, id int) (dto.UserLoadDTO,
 
 	row := r.client.QueryRow(ctx, query, id)
 
-	u := dto.UserLoadDTO{}
+	u := dto.DBUserLoad{}
 	err := row.Scan(&u.Id, &u.Login, &u.FirstName, &u.SecondName, &u.Email, &u.PasswordHash)
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (r *repository) LoadUserByID(ctx context.Context, id int) (dto.UserLoadDTO,
 	return u, nil
 }
 
-func (r *repository) LoadUserByLogin(ctx context.Context, login string) (dto.UserLoadDTO, error) {
+func (r *repository) LoadUserByLogin(ctx context.Context, login string) (dto.DBUserLoad, error) {
 	query := `
 		SELECT 
 			id,
@@ -97,7 +97,7 @@ func (r *repository) LoadUserByLogin(ctx context.Context, login string) (dto.Use
 
 	row := r.client.QueryRow(ctx, query, login)
 
-	u := dto.UserLoadDTO{}
+	u := dto.DBUserLoad{}
 	err := row.Scan(&u.Id, &u.Login, &u.FirstName, &u.SecondName, &u.Email, &u.PasswordHash)
 
 	if err != nil {
@@ -107,7 +107,7 @@ func (r *repository) LoadUserByLogin(ctx context.Context, login string) (dto.Use
 	return u, nil
 }
 
-func (r *repository) LoadAllUsers(ctx context.Context) ([]dto.UserListLoadDTO, error) {
+func (r *repository) LoadAllUsers(ctx context.Context) ([]dto.DBUserListLoad, error) {
 	query := `
 		SELECT 
 			id,
@@ -125,10 +125,10 @@ func (r *repository) LoadAllUsers(ctx context.Context) ([]dto.UserListLoadDTO, e
 		return nil, err
 	}
 
-	dtoArr := make([]dto.UserListLoadDTO, 0)
+	dtoArr := make([]dto.DBUserListLoad, 0)
 
 	for rows.Next() {
-		tempUser := dto.UserListLoadDTO{}
+		tempUser := dto.DBUserListLoad{}
 
 		err = rows.Scan(&tempUser.Id, &tempUser.Login, &tempUser.FirstName, &tempUser.SecondName, &tempUser.Email)
 		if err != nil {
@@ -142,7 +142,7 @@ func (r *repository) LoadAllUsers(ctx context.Context) ([]dto.UserListLoadDTO, e
 
 }
 
-func (r *repository) UpdateUser(ctx context.Context, u dto.UserUpdateDTO) error {
+func (r *repository) UpdateUser(ctx context.Context, u dto.DBUserUpdate) error {
 	id := u.Id
 	query := `
 		UPDATE 

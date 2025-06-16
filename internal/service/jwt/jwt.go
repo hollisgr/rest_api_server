@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func CreateToken(u dto.UserLoadDTO) string {
+func CreateToken(u dto.JWTTokenCreate) (string, error) {
 	expTime := time.Now().Add(time.Hour * time.Duration(cfg.GetConfig().JWT.ExpTime)).Unix()
 
 	payload := jwt.MapClaims{
@@ -21,8 +21,12 @@ func CreateToken(u dto.UserLoadDTO) string {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	t, _ := token.SignedString([]byte(cfg.GetConfig().JWT.SecretKey))
-	return t
+	t, err := token.SignedString([]byte(cfg.GetConfig().JWT.SecretKey))
+
+	if err != nil {
+		return t, err
+	}
+	return t, err
 }
 
 func ParseToken(tokenString string, key string) (*jwt.Token, error) {
