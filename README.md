@@ -76,6 +76,7 @@ REQUEST:
         "second_name":"{your_second_name}",
         "email":"{your@email.com}"
 	}
+
 RESPONSE:
   status: 200
   body: 
@@ -99,10 +100,12 @@ REQUEST:
   method: POST
   headers: 
     Content-Type: "application/json"
-  body: {
+  body: 
+  	{
 	  "login":"{your_login}",
 	  "password":"{your_password}",
 	}
+
 RESPONSE:
   status: 200
   body: 
@@ -134,6 +137,7 @@ REQUEST:
   method: GET
   headers: 
     Authorization: "Bearer {token}"
+
 RESPONSE:
   status: 200
   body: 
@@ -171,6 +175,7 @@ REQUEST:
   method: GET
   headers: 
     Authorization: "Bearer {token}"
+
 RESPONSE:
   status: 200
   body: 
@@ -234,6 +239,7 @@ REQUEST:
 	  "second_name":"{your_new_second_name}",
 	  "email":"{your_new@email.com}"
 	}
+
 RESPONSE:
   status: 200
   body: 
@@ -272,6 +278,7 @@ REQUEST:
   method: DELETE
   headers:
     Authorization: "Bearer {token}"
+	
 RESPONSE:
   status: 200
   body: 
