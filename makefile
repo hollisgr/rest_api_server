@@ -4,6 +4,8 @@ JWT := github.com/golang-jwt/jwt/v5
 VALIDATOR := github.com/go-playground/validator/v10
 GIN := github.com/gin-gonic/gin
 GOOSE := github.com/pressly/goose/v3/cmd/goose@latest
+SWAG := github.com/swaggo/swag/cmd/swag
+GIN_SWAG := github.com/swaggo/gin-swagger github.com/swaggo/files
 
 REST_API_BIN := rest_api
 REST_API_SRC := cmd/rest_api/rest_api.go
@@ -49,7 +51,7 @@ mod:
 	go mod init rest_api
 
 get:
-	go get $(CLEANENV) $(POSTGRESQL) $(JWT) $(VALIDATOR) $(GIN) $(VALIDATOR)
+	go get -u $(CLEANENV) $(POSTGRESQL) $(JWT) $(VALIDATOR) $(GIN) $(VALIDATOR) $(SWAG) $(GIN_SWAG)
 
 clean:
 	rm -rf $(REST_API_BIN)
