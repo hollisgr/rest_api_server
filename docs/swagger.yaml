@@ -61,6 +61,9 @@ definitions:
         minimum: 0
         type: integer
       login:
+        example: login
+        maxLength: 20
+        minLength: 5
         type: string
       second_name:
         example: second_name
@@ -96,6 +99,14 @@ definitions:
       success:
         example: true
         type: boolean
+    type: object
+  handler.UpdateUserResp:
+    properties:
+      success:
+        example: true
+        type: boolean
+      user:
+        $ref: '#/definitions/dto.WebUserLoad'
     type: object
   handler.UserLoadResp:
     properties:
@@ -161,6 +172,8 @@ paths:
           schema:
             $ref: '#/definitions/handler.Err'
       summary: User list
+      tags:
+      - protected
     post:
       consumes:
       - application/json
@@ -189,6 +202,37 @@ paths:
             $ref: '#/definitions/handler.Err'
       summary: Create New User
   /users/:id:
+    delete:
+      description: Delete user by id
+      parameters:
+      - description: user jwt token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.Msg'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.Err'
+      summary: Delete user by id
+      tags:
+      - protected
     get:
       description: User data by id
       parameters:
@@ -218,4 +262,37 @@ paths:
           schema:
             $ref: '#/definitions/handler.Err'
       summary: User by id
+      tags:
+      - protected
+    patch:
+      description: Update user data by id
+      parameters:
+      - description: user jwt token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UpdateUserResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.Err'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.Err'
+      summary: Update user by id
+      tags:
+      - protected
 swagger: "2.0"

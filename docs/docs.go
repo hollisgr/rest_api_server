@@ -64,6 +64,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "protected"
+                ],
                 "summary": "User list",
                 "parameters": [
                     {
@@ -143,6 +146,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "protected"
+                ],
                 "summary": "User by id",
                 "parameters": [
                     {
@@ -165,6 +171,98 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/handler.UserLoadResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Err"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Err"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete user by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "protected"
+                ],
+                "summary": "Delete user by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user jwt token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Msg"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Err"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/handler.Err"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update user data by id",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "protected"
+                ],
+                "summary": "Update user by id",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "user jwt token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.UpdateUserResp"
                         }
                     },
                     "400": {
@@ -269,7 +367,10 @@ const docTemplate = `{
                     "minimum": 0
                 },
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 20,
+                    "minLength": 5,
+                    "example": "login"
                 },
                 "second_name": {
                     "type": "string",
@@ -310,6 +411,18 @@ const docTemplate = `{
                 "success": {
                     "type": "boolean",
                     "example": true
+                }
+            }
+        },
+        "handler.UpdateUserResp": {
+            "type": "object",
+            "properties": {
+                "success": {
+                    "type": "boolean",
+                    "example": true
+                },
+                "user": {
+                    "$ref": "#/definitions/dto.WebUserLoad"
                 }
             }
         },

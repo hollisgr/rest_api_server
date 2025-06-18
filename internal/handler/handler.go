@@ -10,8 +10,8 @@ import (
 	"rest_api/internal/service/user_repository"
 
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
@@ -111,11 +111,12 @@ func (h *Handler) CreateNewUser(c *gin.Context) {
 //
 //	@Summary		User list
 //	@Description	List of all users
+//	@Tags			protected
 //	@Produce		json
 //	@Param			Authorization	header		string	true	"user jwt token"
-//	@Success		200		{object}	handler.Msg
-//	@Failure		400		{object}	handler.Err
-//	@Failure		401		{object}	handler.Err
+//	@Success		200				{object}	handler.Msg
+//	@Failure		400				{object}	handler.Err
+//	@Failure		401				{object}	handler.Err
 //	@Router			/users [get]
 func (h *Handler) UserList(c *gin.Context) {
 	userList, err := h.UserRepository.LoadUserList()
@@ -136,11 +137,12 @@ func (h *Handler) UserList(c *gin.Context) {
 //	@Summary		User by id
 //	@Description	User data by id
 //	@Produce		json
+//	@Tags			protected
 //	@Param			Authorization	header		string	true	"user jwt token"
-//	@Param			id	path		int	true	"User ID"
-//	@Success		200		{object}	handler.UserLoadResp
-//	@Failure		400		{object}	handler.Err
-//	@Failure		401		{object}	handler.Err
+//	@Param			id				path		int		true	"User ID"
+//	@Success		200				{object}	handler.UserLoadResp
+//	@Failure		400				{object}	handler.Err
+//	@Failure		401				{object}	handler.Err
 //	@Router			/users/:id [get]
 func (h *Handler) UserById(c *gin.Context) {
 	idStr := c.Params.ByName("id")
@@ -164,6 +166,18 @@ func (h *Handler) UserById(c *gin.Context) {
 	})
 }
 
+// UpdateUserByID godoc
+//
+//	@Summary		Update user by id
+//	@Description	Update user data by id
+//	@Tags			protected
+//	@Produce		json
+//	@Param			Authorization	header		string	true	"user jwt token"
+//	@Param			id				path		int		true	"User ID"
+//	@Success		200				{object}	handler.UpdateUserResp
+//	@Failure		400				{object}	handler.Err
+//	@Failure		401				{object}	handler.Err
+//	@Router			/users/:id [patch]
 func (h *Handler) UpdateUserByID(c *gin.Context) {
 	id, err := GetID(c)
 	if err != nil {
@@ -192,6 +206,18 @@ func (h *Handler) UpdateUserByID(c *gin.Context) {
 	})
 }
 
+// DeleteUserByID godoc
+//
+//	@Summary		Delete user by id
+//	@Description	Delete user by id
+//	@Tags			protected
+//	@Produce		json
+//	@Param			Authorization	header		string	true	"user jwt token"
+//	@Param			id				path		int		true	"User ID"
+//	@Success		200				{object}	handler.Msg
+//	@Failure		400				{object}	handler.Err
+//	@Failure		401				{object}	handler.Err
+//	@Router			/users/:id [delete]
 func (h *Handler) DeleteUserByID(c *gin.Context) {
 	id, err := GetID(c)
 	if err != nil {

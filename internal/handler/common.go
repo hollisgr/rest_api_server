@@ -18,6 +18,11 @@ type UserLoadResp struct {
 	User    dto.WebUserLoad `json:"user"`
 }
 
+type UpdateUserResp struct {
+	Success bool            `json:"success" example:"true"`
+	User    dto.WebUserLoad `json:"user"`
+}
+
 type Msg struct {
 	Success bool   `json:"success" example:"true"`
 	Status  string `json:"status" example:"status text"`
