@@ -53,5 +53,9 @@ mod:
 get:
 	go get -u $(CLEANENV) $(POSTGRESQL) $(JWT) $(VALIDATOR) $(GIN) $(VALIDATOR) $(SWAG) $(GIN_SWAG)
 
+swag:
+	swag fmt
+	swag init -g handler.go -d internal/handler,internal/service/dto
+
 clean:
 	rm -rf $(REST_API_BIN)

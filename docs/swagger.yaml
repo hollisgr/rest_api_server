@@ -201,7 +201,7 @@ paths:
           schema:
             $ref: '#/definitions/handler.Err'
       summary: Create New User
-  /users/:id:
+  /users/{id}:
     delete:
       description: Delete user by id
       parameters:

@@ -143,7 +143,7 @@ func (h *Handler) UserList(c *gin.Context) {
 //	@Success		200				{object}	handler.UserLoadResp
 //	@Failure		400				{object}	handler.Err
 //	@Failure		401				{object}	handler.Err
-//	@Router			/users/:id [get]
+//	@Router			/users/{id} [get]
 func (h *Handler) UserById(c *gin.Context) {
 	idStr := c.Params.ByName("id")
 	id := 0
@@ -177,7 +177,7 @@ func (h *Handler) UserById(c *gin.Context) {
 //	@Success		200				{object}	handler.UpdateUserResp
 //	@Failure		400				{object}	handler.Err
 //	@Failure		401				{object}	handler.Err
-//	@Router			/users/:id [patch]
+//	@Router			/users/{id} [patch]
 func (h *Handler) UpdateUserByID(c *gin.Context) {
 	id, err := GetID(c)
 	if err != nil {
@@ -217,7 +217,7 @@ func (h *Handler) UpdateUserByID(c *gin.Context) {
 //	@Success		200				{object}	handler.Msg
 //	@Failure		400				{object}	handler.Err
 //	@Failure		401				{object}	handler.Err
-//	@Router			/users/:id [delete]
+//	@Router			/users/{id} [delete]
 func (h *Handler) DeleteUserByID(c *gin.Context) {
 	id, err := GetID(c)
 	if err != nil {

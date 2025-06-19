@@ -140,7 +140,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/:id": {
+        "/users/{id}": {
             "get": {
                 "description": "User data by id",
                 "produces": [
